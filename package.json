@@ -1,0 +1,13 @@
+{
+  "name": "chromium-oopif-touch-wedge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Chromium repro: a second touch while a finger is held in an out-of-process iframe permanently stops touch/pointer events in the main frame",
+  "scripts": {
+    "test": "playwright test",
+    "serve": "node server.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

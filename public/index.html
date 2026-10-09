@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>OOPIF touch wedge repro</title>
+    <style>
+      html, body { margin: 0; height: 100%; }
+      body { display: flex; font: 16px/1.5 system-ui, sans-serif; }
+      #left { flex: 0 0 18rem; padding: 1rem; background: #f1f5f9; }
+      #target { font: inherit; padding: 1rem 2rem; }
+      #counts { white-space: pre; font-family: ui-monospace, monospace; }
+      iframe { flex: 1; border: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="left">
+      <button id="target">Tap me</button>
+      <p id="counts"></p>
+    </div>
+    <iframe id="frame"></iframe>
+
+    <script>
+      // Serve the iframe from the OTHER loopback host so it is cross-origin and,
+      // with --site-per-process --isolate-origins, out-of-process.
+      const otherHost = location.hostname === '127.0.0.1' ? 'localhost' : '127.0.0.1';
+      document.getElementById('frame').src = `http://${otherHost}:${location.port}/frame.html`;
+
+      const button = document.getElementById('target');
+      const out = document.getElementById('counts');
+      const TYPES = ['touchstart', 'pointerdown', 'pointerup', 'click'];
+
+      window.counts = {};
+      window.resetCounts = () => {
+        for (const t of TYPES) window.counts[t] = 0;
+        render();
+      };
+      function render() {
+        out.textContent = TYPES.map((t) => `${t.padEnd(12)} ${window.counts[t]}`).join('\n');
+      }
+      for (const t of TYPES) {
+        button.addEventListener(t, () => (window.counts[t]++, render()), { passive: true });
+      }
+      window.resetCounts();
+    </script>
+  </body>
+</html>
